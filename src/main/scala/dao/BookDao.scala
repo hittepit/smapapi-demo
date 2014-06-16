@@ -45,7 +45,14 @@ class BookDao(val transactionManager:TransactionManager) extends JdbcTransaction
 	  	  	case None => throw new Exception("No id generated")
 	  	  }
 	  	  
-	  	case Some(id) => throw new NotImplementedError
+	  	case Some(id) => 
+	  	  session.execute("update book set title=?, isbn=?, author=?, book_type=? where id=?",
+	  	      List(Param(book.title,NotNullableString),
+	  	          Param(book.isbn.code,NotNullableString),
+	  	          Param(book.author,NullableString),
+	  	          Param(book.bookType.toString,NotNullableString),
+	  	          Param(book.id.get,NotNullableInt)))
+	  	  book
 	  }
 	}
 }

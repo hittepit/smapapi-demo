@@ -108,5 +108,24 @@ class TestBookDao extends WordSpec with BeforeAndAfter with MustMatchers{
         b3.get.author must be(None)
       }
     }
+    "invoked with a persistent book" must {
+      "return the same instance of book" in {
+        val b1 = new Book(Some(1001),"Histoire de Robots",Isbn("2253071951"),Some("Klein"),BookType.paper)
+        
+        val b2 = bookDao.saveOrUpdate(b1)
+        
+        b2 must be theSameInstanceAs(b1)
+      }
+      "update the book in database" in {
+        val b1 = new Book(Some(1001),"Histoire de Robots",Isbn("2253071951"),Some("Klein"),BookType.paper)
+        bookDao.saveOrUpdate(b1)
+        val b2 = bookDao.find(1001)
+        
+        b2.get.title must be("Histoire de Robots")
+        b2.get.isbn must be(Isbn("2253071951"))
+        b2.get.author must be(Some("Klein"))
+        b2.get.bookType must be(BookType.paper)
+      }
+    }
   }
 }

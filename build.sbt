@@ -8,6 +8,8 @@ scalaVersion := "2.10.3"
 
 libraryDependencies += "org.hittepit" %% "smapapi" % "0.1.1"
 
+libraryDependencies += "commons-validator" % "commons-validator" % "1.4.0"
+
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.0.13"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.7" % "test->*" excludeAll (ExclusionRule(organization="org.junit", name="junit"))

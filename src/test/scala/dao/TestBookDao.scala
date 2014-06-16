@@ -25,8 +25,9 @@ class TestBookDao extends WordSpec with BeforeAndAfter with MustMatchers{
     val connection = ds.getConnection()
     var st = connection.createStatement
     st.addBatch("create table BOOK (ID integer auto_increment, TITLE varchar(50), ISBN VARCHAR(13), AUTHOR varchar(50), BOOK_TYPE varchar(5), PRIMARY KEY(id));")
-    st.addBatch("insert into BOOK (id,title,isbn,author,book_type) values (1000,'Dune','2940199612','Frank Herbert','eBook');")
-    st.addBatch("insert into BOOK (id,title,isbn,author,book_type) values (1001,'Histoires de Robots','2940199613',null,'paper');")
+    st.addBatch("insert into BOOK (id,title,isbn,author,book_type) values (1000,'Dune','9780450011849','Frank Herbert','eBook');")
+    st.addBatch("insert into BOOK (id,title,isbn,author,book_type) values (1001,'Histoires de Robots','2253071951',null,'paper');")
+    st.addBatch("insert into BOOK (id,title,isbn,author,book_type) values (1002,'La chute d''Hypérion','2266111566','Dan Simmons','paper');")
     st.executeBatch()
     connection.commit()
     connection.close
@@ -51,7 +52,7 @@ class TestBookDao extends WordSpec with BeforeAndAfter with MustMatchers{
         book.id must be (Some(1000))
         book.title must be("Dune")
         book.author must be (Some("Frank Herbert"))
-        book.isbn must be("2940199612")
+        book.isbn.code must be("9780450011849")
         book.bookType must be(BookType.eBook)
       }
       "return an option with the correct Book object with None as author if author was not defined" in {
@@ -61,7 +62,7 @@ class TestBookDao extends WordSpec with BeforeAndAfter with MustMatchers{
         book.id must be (Some(1001))
         book.title must be("Histoires de Robots")
         book.author must be (None)
-        book.isbn must be("2940199613")
+        book.isbn.code must be("9782253071952")
         book.bookType must be(BookType.paper)
       }
     }
@@ -77,7 +78,7 @@ class TestBookDao extends WordSpec with BeforeAndAfter with MustMatchers{
     "invoked" must {
       "return the list of all books" in {
         val books = bookDao.findAll
-        books.size must be(2)
+        books.size must be(3)
       }
     }
   }

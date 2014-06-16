@@ -11,6 +11,7 @@ import model.Book
 import org.hittepit.smapapi.core.NullableString
 import org.hittepit.smapapi.core.Param
 import org.hittepit.smapapi.core.NotNullableInt
+import model.Isbn
 
 class BookDao(val transactionManager:TransactionManager) extends JdbcTransaction{
 	val logger = LoggerFactory.getLogger(classOf[BookDao])
@@ -19,7 +20,7 @@ class BookDao(val transactionManager:TransactionManager) extends JdbcTransaction
 	  val bookType = BookType.withName(row.getColumnValue("BOOK_TYPE", NotNullableString))
 	  new Book(row.getColumnValue("ID", NullableInt), 
 	      row.getColumnValue("TITLE", NotNullableString), 
-	      row.getColumnValue("ISBN", NotNullableString), 
+	      Isbn(row.getColumnValue("ISBN", NotNullableString)), 
 	      row.getColumnValue("AUTHOR", NullableString), 
 	      bookType)
 	}

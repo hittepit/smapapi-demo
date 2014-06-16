@@ -1,5 +1,7 @@
 package model
 
+import org.apache.commons.validator.routines.ISBNValidator
+
 object BookType extends Enumeration{
   type BookType = Value
   
@@ -9,4 +11,14 @@ object BookType extends Enumeration{
 
 import BookType._
 
-class Book(val id:Option[Int], val title:String, val isbn:String, val author:Option[String], val bookType:BookType)
+class Isbn(c:String){
+  require(Isbn.validate(c))
+  val code= new ISBNValidator(true).validate(c)
+}
+
+object Isbn{
+  def apply(code:String) = new Isbn(code)
+  def validate(code:String) = new ISBNValidator(true).isValid(code)
+}
+
+class Book(val id:Option[Int], val title:String, val isbn:Isbn, val author:Option[String], val bookType:BookType)

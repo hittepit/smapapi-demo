@@ -7,6 +7,8 @@ import org.apache.commons.dbcp.BasicDataSource
 import java.sql.Connection
 import org.hittepit.smapapi.transaction.TransactionManager
 import model.BookType
+import model.Book
+import model.Isbn
 
 class TestBookDao extends WordSpec with BeforeAndAfter with MustMatchers{
  class DataSource extends BasicDataSource {
@@ -79,6 +81,31 @@ class TestBookDao extends WordSpec with BeforeAndAfter with MustMatchers{
       "return the list of all books" in {
         val books = bookDao.findAll
         books.size must be(3)
+      }
+    }
+  }
+  
+  "The saveOrUpdate method" when {
+    "invoked with a transient book" must {
+      "return a persisted book" in {
+        val b1 = new Book(None,"Histoire d'automates",Isbn("2253033723"),None,BookType.eBook)
+        
+        val b2 = bookDao.saveOrUpdate(b1)
+        
+        b2 must not be theSameInstanceAs(b1)
+        
+        b2.id must be('defined)
+      }
+      "insert the book in database" in {
+        val b1 = new Book(None,"Histoire d'automates",Isbn("2253033723"),None,BookType.eBook)
+        val b2 = bookDao.saveOrUpdate(b1)
+        
+        val b3 = bookDao.find(b2.id.get)
+        
+        b3 must be('defined)
+        b3.get.title must be("Histoire d'automates")
+        b3.get.isbn must be(Isbn("2253033723"))
+        b3.get.author must be(None)
       }
     }
   }

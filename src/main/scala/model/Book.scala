@@ -14,6 +14,15 @@ import BookType._
 class Isbn(c:String){
   require(Isbn.validate(c))
   val code= new ISBNValidator(true).validate(c)
+  
+  override def equals(o:Any) = o match {
+    case i:Isbn => i.code == code
+    case _ => false
+  }
+  
+  override def hashCode = code.hashCode()
+  
+  override def toString = "Isbn("+code+")"
 }
 
 object Isbn{

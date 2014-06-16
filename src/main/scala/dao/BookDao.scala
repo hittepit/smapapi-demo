@@ -12,6 +12,7 @@ import org.hittepit.smapapi.core.NullableString
 import org.hittepit.smapapi.core.Param
 import org.hittepit.smapapi.core.NotNullableInt
 import model.Isbn
+import org.hittepit.smapapi.core.Column
 
 class BookDao(val transactionManager:TransactionManager) extends JdbcTransaction{
 	val logger = LoggerFactory.getLogger(classOf[BookDao])
@@ -31,5 +32,20 @@ class BookDao(val transactionManager:TransactionManager) extends JdbcTransaction
 	
 	def findAll = readOnly{session =>
 	  session.select("select * from Book",List()) map bookMapper
+	}
+	
+	def saveOrUpdate(book:Book) = inTransaction{session =>
+	  book.id match {
+	  	case None => 
+	  	  val id = session.insert("insert into book (title,isbn,author,book_type) values (?,?,?,?)", 
+	  	    List(Param(book.title,NotNullableString),Param(book.isbn.code,NotNullableString),Param(book.author,NullableString),Param(book.bookType.toString,NotNullableString)), 
+	  	    Column("id",NotNullableInt))
+	  	  id match {
+	  	  	case Some(i) => new Book(Some(i),book.title,book.isbn,book.author,book.bookType)
+	  	  	case None => throw new Exception("No id generated")
+	  	  }
+	  	  
+	  	case Some(id) => throw new NotImplementedError
+	  }
 	}
 }

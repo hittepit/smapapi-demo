@@ -27,4 +27,8 @@ class BookDao(val transactionManager:TransactionManager) extends JdbcTransaction
 	def find(id:Int) = readOnly{session =>
 	  session.unique("select * from BOOK where id=?", List(Param(id,NotNullableInt)), bookMapper)
 	}
+	
+	def findAll = readOnly{session =>
+	  session.select("select * from Book",List()) map bookMapper
+	}
 }

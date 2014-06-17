@@ -6,7 +6,7 @@ organization := "org.hittepit"
 
 scalaVersion := "2.10.3"
 
-libraryDependencies += "org.hittepit" %% "smapapi" % "0.1.1"
+libraryDependencies += "org.hittepit" %% "smapapi" % "0.1.1-SNAPSHOT"
 
 libraryDependencies += "commons-validator" % "commons-validator" % "1.4.0"
 

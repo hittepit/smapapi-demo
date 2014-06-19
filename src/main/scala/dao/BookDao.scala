@@ -55,4 +55,11 @@ class BookDao(val transactionManager:TransactionManager) extends JdbcTransaction
 	  	  book
 	  }
 	}
+	
+	def delete(book:Book) = inTransaction{session =>
+	  book.id match {
+	    case Some(id) => session.execute("delete book where id=?",List(Param(id,NotNullableInt)))
+	    case None => throw new Exception("Transient book")
+	  }
+	}
 }

@@ -128,4 +128,31 @@ class TestBookDao extends WordSpec with BeforeAndAfter with MustMatchers{
       }
     }
   }
+  
+  "Delete" when {
+    "called with a persitent book" must {
+      "delete the row in DB corresponding to its id" in {
+        val b = new Book(Some(1000),"Dune",Isbn("9780450011849"),None,BookType.paper)
+        bookDao.delete(b)
+        
+        bookDao.find(1000) must be(None)
+      }
+      "return the number of deleted lines" in {
+        val b = new Book(Some(1000),"Dune",Isbn("9780450011849"),None,BookType.paper)
+        bookDao.delete(b) must be(1)
+      }
+    }
+    "called with an non existing book" must {
+      "return 0" in {
+        val nonExitentBook = new Book(Some(15),"rien",Isbn("2253071951"),None,BookType.paper)
+        bookDao.delete(nonExitentBook) must be(0)
+      }
+    }
+    "called with a transient book" must {
+      "throw an exception" in {
+        val transientBook = new Book(None,"rien",Isbn("2253071951"),None,BookType.paper)
+        an [Exception] must be thrownBy(bookDao.delete(transientBook))
+      }
+    }
+  }
 }

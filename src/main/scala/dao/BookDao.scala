@@ -16,7 +16,7 @@ import org.hittepit.smapapi.core.Column
 
 class BookDao(val transactionManager:TransactionManager) extends JdbcTransaction{
 	val logger = LoggerFactory.getLogger(classOf[BookDao])
-	
+
 	def bookMapper(row:Row) = {
 	  val bookType = BookType.withName(row.getColumnValue("BOOK_TYPE", NotNullableString))
 	  new Book(row.getColumnValue("ID", NullableInt), 
@@ -25,15 +25,15 @@ class BookDao(val transactionManager:TransactionManager) extends JdbcTransaction
 	      row.getColumnValue("AUTHOR", NullableString), 
 	      bookType)
 	}
-	
+
 	def find(id:Int) = readOnly{session =>
 	  session.unique("select * from BOOK where id=?", List(Param(id,NotNullableInt)), bookMapper)
 	}
-	
+
 	def findAll = readOnly{session =>
 	  session.select("select * from Book",List()) map bookMapper
 	}
-	
+
 	def saveOrUpdate(book:Book) = inTransaction{session =>
 	  book.id match {
 	  	case None => 

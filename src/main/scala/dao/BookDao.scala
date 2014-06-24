@@ -15,7 +15,7 @@ import model.Isbn
 import org.hittepit.smapapi.core.Column
 
 class BookDao(val transactionManager:TransactionManager) extends JdbcTransaction{
-	val logger = LoggerFactory.getLogger(classOf[BookDao])
+	override val logger = LoggerFactory.getLogger(classOf[BookDao])
 
 	def bookMapper(row:Row) = {
 	  val bookType = BookType.withName(row.getColumnValue("BOOK_TYPE", StringProperty))

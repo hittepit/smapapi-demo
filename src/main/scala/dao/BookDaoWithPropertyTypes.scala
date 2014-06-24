@@ -29,7 +29,7 @@ object IsbnPropertyType extends PropertyType[Isbn]{
 }
 
 class BookDaoWithPropertyTypes(val transactionManager:TransactionManager) extends JdbcTransaction {
-	val logger = LoggerFactory.getLogger(classOf[BookDaoWithPropertyTypes])
+	override val logger = LoggerFactory.getLogger(classOf[BookDaoWithPropertyTypes])
 
 	def bookMapper(row:Row) = {
 	  new Book(row.getColumnValue("ID", OptionalIntProperty), 

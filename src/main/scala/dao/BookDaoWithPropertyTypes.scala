@@ -17,6 +17,9 @@ import org.hittepit.smapapi.core.OptionalIntProperty
 import org.hittepit.smapapi.core.Param
 import org.hittepit.smapapi.core.IntProperty
 import org.hittepit.smapapi.core.Column
+import org.hittepit.smapapi.core.GeneratedIntId
+import org.hittepit.smapapi.core.Persistent
+import org.hittepit.smapapi.core.Transient
 
 object BookTypePropertyType extends PropertyType[BookType]{
 	def getColumnValue(rs: ResultSet, column: Either[String, Int]): BookType = BookType.withName(StringProperty.getColumnValue(rs, column))
@@ -32,7 +35,7 @@ class BookDaoWithPropertyTypes(val transactionManager:TransactionManager) extend
 	override val logger = LoggerFactory.getLogger(classOf[BookDaoWithPropertyTypes])
 
 	def bookMapper(row:Row) = {
-	  new Book(row.getColumnValue("ID", OptionalIntProperty), 
+	  new Book(row.getColumnValue("ID", GeneratedIntId), 
 	      row.getColumnValue("TITLE", StringProperty), 
 	      row.getColumnValue("ISBN", IsbnPropertyType), 
 	      row.getColumnValue("AUTHOR", OptionalStringProperty), 
@@ -48,7 +51,7 @@ class BookDaoWithPropertyTypes(val transactionManager:TransactionManager) extend
 	}
 
 	def persist(book:Book) = inTransaction{session =>
-	  require(! book.id.isDefined)
+	  require(! book.id.isGenerated)
   	  val id = session.insert("insert into book (title,isbn,author,book_type) values (?,?,?,?)", 
   	    List(Param(book.title,StringProperty),
   	        Param(book.isbn,IsbnPropertyType),
@@ -56,25 +59,25 @@ class BookDaoWithPropertyTypes(val transactionManager:TransactionManager) extend
   	        Param(book.bookType,BookTypePropertyType)), 
   	    Column("id",IntProperty))
   	  id match {
-  	  	case Some(i) => new Book(Some(i),book.title,book.isbn,book.author,book.bookType)
+  	  	case Some(i) => new Book(Persistent(i),book.title,book.isbn,book.author,book.bookType)
   	  	case None => throw new Exception("No id generated")
   	  }
 	}
 	
 	def update(book:Book) = inTransaction{session =>
-	  require(book.id.isDefined)
+	  require(book.id.isGenerated)
   	  session.execute("update book set title=?, isbn=?, author=?, book_type=? where id=?",
   	      List(Param(book.title,StringProperty),
   	          Param(book.isbn,IsbnPropertyType),
   	          Param(book.author,OptionalStringProperty),
   	          Param(book.bookType,BookTypePropertyType),
-  	          Param(book.id.get,IntProperty)))
+  	          Param(book.id.value,IntProperty)))
   	  book
 	}
 	
 	def delete(book:Book) = inTransaction{session =>
 	  book.id match {
-	    case Some(id) => session.execute("delete book where id=?",List(Param(id,IntProperty)))
-	    case None => throw new Exception("Transient book")
+	    case Persistent(id) => session.execute("delete book where id=?",List(Param(id,IntProperty)))
+	    case Transient() => throw new Exception("Transient book")
 	  }
 	}}

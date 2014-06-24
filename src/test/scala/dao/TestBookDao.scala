@@ -9,6 +9,9 @@ import org.hittepit.smapapi.transaction.TransactionManager
 import model.BookType
 import model.Book
 import model.Isbn
+import org.hittepit.smapapi.core.Transient
+import org.hittepit.smapapi.core.Persistent
+import org.hittepit.smapapi.core.Persistent
 
 class TestBookDao extends WordSpec with BeforeAndAfter with MustMatchers{
  class DataSource extends BasicDataSource {
@@ -51,7 +54,7 @@ class TestBookDao extends WordSpec with BeforeAndAfter with MustMatchers{
         val b = bookDao.find(1000)
         b must be('defined)
         val book = b.get
-        book.id must be (Some(1000))
+        book.id must be (Persistent(1000))
         book.title must be("Dune")
         book.author must be (Some("Frank Herbert"))
         book.isbn.code must be("9780450011849")
@@ -61,7 +64,7 @@ class TestBookDao extends WordSpec with BeforeAndAfter with MustMatchers{
         val b = bookDao.find(1001)
         b must be('defined)
         val book = b.get
-        book.id must be (Some(1001))
+        book.id must be (Persistent(1001))
         book.title must be("Histoires de Robots")
         book.author must be (None)
         book.isbn.code must be("9782253071952")
@@ -88,19 +91,19 @@ class TestBookDao extends WordSpec with BeforeAndAfter with MustMatchers{
   "The saveOrUpdate method" when {
     "invoked with a transient book" must {
       "return a persisted book" in {
-        val b1 = new Book(None,"Histoire d'automates",Isbn("2253033723"),None,BookType.eBook)
+        val b1 = new Book(Transient(),"Histoire d'automates",Isbn("2253033723"),None,BookType.eBook)
         
         val b2 = bookDao.saveOrUpdate(b1)
         
         b2 must not be theSameInstanceAs(b1)
         
-        b2.id must be('defined)
+        b2.id must be('generated)
       }
       "insert the book in database" in {
-        val b1 = new Book(None,"Histoire d'automates",Isbn("2253033723"),None,BookType.eBook)
+        val b1 = new Book(Transient(),"Histoire d'automates",Isbn("2253033723"),None,BookType.eBook)
         val b2 = bookDao.saveOrUpdate(b1)
         
-        val b3 = bookDao.find(b2.id.get)
+        val b3 = bookDao.find(b2.id.value)
         
         b3 must be('defined)
         b3.get.title must be("Histoire d'automates")
@@ -110,14 +113,14 @@ class TestBookDao extends WordSpec with BeforeAndAfter with MustMatchers{
     }
     "invoked with a persistent book" must {
       "return the same instance of book" in {
-        val b1 = new Book(Some(1001),"Histoire de Robots",Isbn("2253071951"),Some("Klein"),BookType.paper)
+        val b1 = new Book(Persistent(1001),"Histoire de Robots",Isbn("2253071951"),Some("Klein"),BookType.paper)
         
         val b2 = bookDao.saveOrUpdate(b1)
         
         b2 must be theSameInstanceAs(b1)
       }
       "update the book in database" in {
-        val b1 = new Book(Some(1001),"Histoire de Robots",Isbn("2253071951"),Some("Klein"),BookType.paper)
+        val b1 = new Book(Persistent(1001),"Histoire de Robots",Isbn("2253071951"),Some("Klein"),BookType.paper)
         bookDao.saveOrUpdate(b1)
         val b2 = bookDao.find(1001)
         
@@ -132,25 +135,25 @@ class TestBookDao extends WordSpec with BeforeAndAfter with MustMatchers{
   "Delete" when {
     "called with a persitent book" must {
       "delete the row in DB corresponding to its id" in {
-        val b = new Book(Some(1000),"Dune",Isbn("9780450011849"),None,BookType.paper)
+        val b = new Book(Persistent(1000),"Dune",Isbn("9780450011849"),None,BookType.paper)
         bookDao.delete(b)
         
         bookDao.find(1000) must be(None)
       }
       "return the number of deleted lines" in {
-        val b = new Book(Some(1000),"Dune",Isbn("9780450011849"),None,BookType.paper)
+        val b = new Book(Persistent(1000),"Dune",Isbn("9780450011849"),None,BookType.paper)
         bookDao.delete(b) must be(1)
       }
     }
     "called with an non existing book" must {
       "return 0" in {
-        val nonExitentBook = new Book(Some(15),"rien",Isbn("2253071951"),None,BookType.paper)
+        val nonExitentBook = new Book(Persistent(15),"rien",Isbn("2253071951"),None,BookType.paper)
         bookDao.delete(nonExitentBook) must be(0)
       }
     }
     "called with a transient book" must {
       "throw an exception" in {
-        val transientBook = new Book(None,"rien",Isbn("2253071951"),None,BookType.paper)
+        val transientBook = new Book(Transient(),"rien",Isbn("2253071951"),None,BookType.paper)
         an [Exception] must be thrownBy(bookDao.delete(transientBook))
       }
     }

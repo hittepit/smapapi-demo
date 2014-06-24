@@ -1,6 +1,7 @@
 package model
 
 import org.apache.commons.validator.routines.ISBNValidator
+import org.hittepit.smapapi.core.GeneratedId
 
 object BookType extends Enumeration{
   type BookType = Value
@@ -30,4 +31,4 @@ object Isbn{
   def validate(code:String) = new ISBNValidator(true).isValid(code)
 }
 
-class Book(val id:Option[Int], val title:String, val isbn:Isbn, val author:Option[String], val bookType:BookType)
+class Book(val id:GeneratedId[Int], val title:String, val isbn:Isbn, val author:Option[String], val bookType:BookType)

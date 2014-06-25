@@ -14,9 +14,9 @@ import model.Book
 import org.hittepit.smapapi.core.result.Row
 import org.hittepit.smapapi.core.OptionalStringProperty
 import org.hittepit.smapapi.core.OptionalIntProperty
-import org.hittepit.smapapi.core.Param
+import org.hittepit.smapapi.core.session.Param
 import org.hittepit.smapapi.core.IntProperty
-import org.hittepit.smapapi.core.Column
+import org.hittepit.smapapi.core.session.Column
 import org.hittepit.smapapi.core.GeneratedIntId
 import org.hittepit.smapapi.core.Persistent
 import org.hittepit.smapapi.core.Transient

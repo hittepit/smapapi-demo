@@ -9,10 +9,10 @@ import model.BookType
 import org.hittepit.smapapi.core.OptionalIntProperty
 import model.Book
 import org.hittepit.smapapi.core.OptionalStringProperty
-import org.hittepit.smapapi.core.Param
+import org.hittepit.smapapi.core.session.Param
 import org.hittepit.smapapi.core.IntProperty
 import model.Isbn
-import org.hittepit.smapapi.core.Column
+import org.hittepit.smapapi.core.session.Column
 import org.hittepit.smapapi.core.GeneratedIntId
 import org.hittepit.smapapi.core.Transient
 import org.hittepit.smapapi.core.Persistent
